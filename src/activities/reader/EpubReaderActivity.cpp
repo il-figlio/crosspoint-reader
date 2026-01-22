@@ -157,9 +157,9 @@ void EpubReaderActivity::loop() {
     return;
   }
 
-  // Short press BACK goes to file selection
+  // Short press BACK goes to home screen
   if (mappedInput.wasReleased(MappedInputManager::Button::Back) && mappedInput.getHeldTime() < goHomeMs) {
-    onGoBack();
+    onGoHome();
     return;
   }
 
@@ -460,13 +460,17 @@ void EpubReaderActivity::renderStatusBar(const int orientedMarginRight, const in
     ScreenComponents::drawBattery(renderer, orientedMarginLeft + 1, textY, showBatteryPercentage);
   }
 
+  // Draw clock after battery (if time is available)
+  const int batterySize = showBattery ? (showBatteryPercentage ? 50 : 20) : 0;
+  const int clockX = orientedMarginLeft + batterySize + 10;
+  ScreenComponents::drawClock(renderer, clockX + 45, textY);
+
   if (showChapterTitle) {
     // Centered chatper title text
     // Page width minus existing content with 30px padding on each side
     const int rendererableScreenWidth = renderer.getScreenWidth() - orientedMarginLeft - orientedMarginRight;
 
-    const int batterySize = showBattery ? (showBatteryPercentage ? 50 : 20) : 0;
-    const int titleMarginLeft = batterySize + 30;
+    const int titleMarginLeft = batterySize + 60;  // Account for clock space
     const int titleMarginRight = progressTextWidth + 30;
 
     // Attempt to center title on the screen, but if title is too wide then later we will center it within the

@@ -6,6 +6,7 @@
 #include <string>
 
 #include "Battery.h"
+#include "TimeManager.h"
 #include "fontIds.h"
 
 void ScreenComponents::drawBattery(const GfxRenderer& renderer, const int left, const int top,
@@ -40,6 +41,16 @@ void ScreenComponents::drawBattery(const GfxRenderer& renderer, const int left, 
   }
 
   renderer.fillRect(x + 2, y + 2, filledWidth, batteryHeight - 4);
+}
+
+void ScreenComponents::drawClock(const GfxRenderer& renderer, const int right, const int top) {
+  const std::string timeStr = TIME_MANAGER.getTimeString();
+  if (timeStr.empty()) {
+    return;  // No time available
+  }
+
+  const int textWidth = renderer.getTextWidth(SMALL_FONT_ID, timeStr.c_str());
+  renderer.drawText(SMALL_FONT_ID, right - textWidth, top, timeStr.c_str());
 }
 
 int ScreenComponents::drawTabBar(const GfxRenderer& renderer, const int y, const std::vector<TabInfo>& tabs) {

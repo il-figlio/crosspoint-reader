@@ -184,15 +184,10 @@ void MyLibraryActivity::loop() {
   const int itemCount = getCurrentItemCount();
   const int pageItems = getPageItems();
 
-  // Long press BACK (1s+) in Files tab goes to root folder
-  if (currentTab == Tab::Files && mappedInput.isPressed(MappedInputManager::Button::Back) &&
+  // Long press BACK (1s+) goes directly to home screen
+  if (mappedInput.isPressed(MappedInputManager::Button::Back) &&
       mappedInput.getHeldTime() >= GO_HOME_MS) {
-    if (basepath != "/") {
-      basepath = "/";
-      loadFiles();
-      selectorIndex = 0;
-      updateRequired = true;
-    }
+    onGoHome();
     return;
   }
 
@@ -357,6 +352,21 @@ void MyLibraryActivity::renderFilesTab() const {
   const auto pageWidth = renderer.getScreenWidth();
   const int pageItems = getPageItems();
   const int fileCount = static_cast<int>(files.size());
+
+  // Display current path below tab bar
+  constexpr int PATH_Y = 42;
+  std::string displayPath = basepath;
+  const int maxPathWidth = pageWidth - LEFT_MARGIN - RIGHT_MARGIN;
+  int pathWidth = renderer.getTextWidth(UI_10_FONT_ID, displayPath.c_str());
+  if (pathWidth > maxPathWidth) {
+    // Truncate from the beginning, show "..." + end of path
+    while (pathWidth > maxPathWidth - 20 && displayPath.length() > 4) {
+      displayPath = displayPath.substr(1);
+      pathWidth = renderer.getTextWidth(UI_10_FONT_ID, displayPath.c_str());
+    }
+    displayPath = "..." + displayPath;
+  }
+  renderer.drawText(UI_10_FONT_ID, LEFT_MARGIN, PATH_Y, displayPath.c_str());
 
   if (fileCount == 0) {
     renderer.drawText(UI_10_FONT_ID, LEFT_MARGIN, CONTENT_START_Y, "No books found");

@@ -106,6 +106,9 @@ void CrossPointWebServer::begin() {
   // Delete file/folder endpoint
   server->on("/delete", HTTP_POST, [this] { handleDelete(); });
 
+  // Reboot endpoint to exit file transfer mode
+  server->on("/api/reboot", HTTP_POST, [this] { handleReboot(); });
+
   server->onNotFound([this] { handleNotFound(); });
   Serial.printf("[%lu] [WEB] [MEM] Free heap after route setup: %d bytes\n", millis(), ESP.getFreeHeap());
 
@@ -228,6 +231,23 @@ void CrossPointWebServer::handleStatus() const {
   String json;
   serializeJson(doc, json);
   server->send(200, "application/json", json);
+}
+
+void CrossPointWebServer::handleReboot() const {
+  Serial.printf("[%lu] [WEB] Reboot endpoint called\n", millis());
+
+  JsonDocument doc;
+  doc["status"] = "rebooting";
+  doc["message"] = "Device will restart shortly";
+  doc["uptime"] = millis() / 1000;
+
+  String json;
+  serializeJson(doc, json);
+  server->send(200, "application/json", json);
+
+  // Give client time to receive the response before restarting
+  delay(500);
+  ESP.restart();
 }
 
 void CrossPointWebServer::scanFiles(const char* path, const std::function<void(FileInfo)>& callback) const {

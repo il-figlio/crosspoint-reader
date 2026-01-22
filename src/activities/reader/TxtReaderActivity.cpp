@@ -101,9 +101,9 @@ void TxtReaderActivity::loop() {
     return;
   }
 
-  // Short press BACK goes to file selection
+  // Short press BACK goes to home screen
   if (mappedInput.wasReleased(MappedInputManager::Button::Back) && mappedInput.getHeldTime() < goHomeMs) {
-    onGoBack();
+    onGoHome();
     return;
   }
 
@@ -520,8 +520,12 @@ void TxtReaderActivity::renderStatusBar(const int orientedMarginRight, const int
     ScreenComponents::drawBattery(renderer, orientedMarginLeft, textY);
   }
 
+  // Draw clock after battery (if time is available)
+  const int clockX = orientedMarginLeft + 60;
+  ScreenComponents::drawClock(renderer, clockX + 45, textY);
+
   if (showTitle) {
-    const int titleMarginLeft = 50 + 30 + orientedMarginLeft;
+    const int titleMarginLeft = 110 + 30 + orientedMarginLeft;  // Account for clock space
     const int titleMarginRight = progressTextWidth + 30 + orientedMarginRight;
     const int availableTextWidth = renderer.getScreenWidth() - titleMarginLeft - titleMarginRight;
 

@@ -105,9 +105,9 @@ void XtcReaderActivity::loop() {
     return;
   }
 
-  // Short press BACK goes to file selection
+  // Short press BACK goes to home screen
   if (mappedInput.wasReleased(MappedInputManager::Button::Back) && mappedInput.getHeldTime() < goHomeMs) {
-    onGoBack();
+    onGoHome();
     return;
   }
 

@@ -6,6 +6,7 @@
 #include <map>
 
 #include "MappedInputManager.h"
+#include "TimeManager.h"
 #include "WifiCredentialStore.h"
 #include "activities/util/KeyboardEntryActivity.h"
 #include "fontIds.h"
@@ -250,6 +251,9 @@ void WifiSelectionActivity::checkConnectionStatus() {
     char ipStr[16];
     snprintf(ipStr, sizeof(ipStr), "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
     connectedIP = ipStr;
+
+    // Sync time via NTP now that we have network access
+    TIME_MANAGER.syncFromNtp();
 
     // If we entered a new password, ask if user wants to save it
     // Otherwise, immediately complete so parent can start web server

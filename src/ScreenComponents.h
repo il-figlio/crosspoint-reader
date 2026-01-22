@@ -15,6 +15,10 @@ class ScreenComponents {
  public:
   static void drawBattery(const GfxRenderer& renderer, int left, int top, bool showPercentage = true);
 
+  // Draw clock time (HH:MM) right-aligned at the specified position
+  // Only draws if time is available from TimeManager
+  static void drawClock(const GfxRenderer& renderer, int right, int top);
+
   // Draw a horizontal tab bar with underline indicator for selected tab
   // Returns the height of the tab bar (for positioning content below)
   static int drawTabBar(const GfxRenderer& renderer, int y, const std::vector<TabInfo>& tabs);

@@ -2,9 +2,11 @@
 
 #include <GfxRenderer.h>
 
+#include "CrossPointSettings.h"
 #include "KOReaderCredentialStore.h"
 #include "KOReaderSyncActivity.h"
 #include "MappedInputManager.h"
+#include "ScreenComponents.h"
 #include "fontIds.h"
 
 namespace {
@@ -210,5 +212,35 @@ void EpubReaderChapterSelectionActivity::renderScreen() {
   const auto labels = mappedInput.mapLabels("« Back", "Select", "Up", "Down");
   renderer.drawButtonHints(UI_10_FONT_ID, labels.btn1, labels.btn2, labels.btn3, labels.btn4);
 
+  renderStatusBar();
+
   renderer.displayBuffer();
+}
+
+void EpubReaderChapterSelectionActivity::renderStatusBar() const {
+  const bool showProgress = SETTINGS.statusBar == CrossPointSettings::STATUS_BAR_MODE::FULL;
+  const bool showBattery = SETTINGS.statusBar == CrossPointSettings::STATUS_BAR_MODE::NO_PROGRESS ||
+                           SETTINGS.statusBar == CrossPointSettings::STATUS_BAR_MODE::FULL;
+
+  if (!showBattery && !showProgress) return;
+
+  const int screenHeight = renderer.getScreenHeight();
+  const int textY = screenHeight - 55;  // Above button hints
+
+  if (showBattery) {
+    const bool showBatteryPercentage =
+        SETTINGS.hideBatteryPercentage == CrossPointSettings::HIDE_BATTERY_PERCENTAGE::HIDE_NEVER;
+    ScreenComponents::drawBattery(renderer, 20, textY, showBatteryPercentage);
+  }
+
+  if (showProgress && totalPagesInSpine > 0) {
+    // Calculate progress in book
+    const float sectionChapterProg = static_cast<float>(currentPage) / totalPagesInSpine;
+    const float bookProgress = epub->calculateProgress(currentSpineIndex, sectionChapterProg) * 100;
+
+    char progressStr[16];
+    snprintf(progressStr, sizeof(progressStr), "%.1f%%", bookProgress);
+    const int progressWidth = renderer.getTextWidth(SMALL_FONT_ID, progressStr);
+    renderer.drawText(SMALL_FONT_ID, renderer.getScreenWidth() - 20 - progressWidth, textY, progressStr);
+  }
 }

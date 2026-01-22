@@ -94,6 +94,8 @@ class CrossPointSettings {
   uint8_t hideBatteryPercentage = HIDE_NEVER;
   // Long-press chapter skip on side buttons
   uint8_t longPressChapterSkip = 1;
+  // Disable book cover images for faster navigation
+  uint8_t disableBookCovers = 0;
 
   ~CrossPointSettings() = default;
 

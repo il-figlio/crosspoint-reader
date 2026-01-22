@@ -59,7 +59,7 @@ void HomeActivity::onEnter() {
         lastBookAuthor = std::string(epub.getAuthor());
       }
       // Try to generate thumbnail image for Continue Reading card
-      if (epub.generateThumbBmp()) {
+      if (!SETTINGS.disableBookCovers && epub.generateThumbBmp()) {
         coverBmpPath = epub.getThumbBmpPath();
         hasCoverImage = true;
       }
@@ -72,7 +72,7 @@ void HomeActivity::onEnter() {
           lastBookTitle = std::string(xtc.getTitle());
         }
         // Try to generate thumbnail image for Continue Reading card
-        if (xtc.generateThumbBmp()) {
+        if (!SETTINGS.disableBookCovers && xtc.generateThumbBmp()) {
           coverBmpPath = xtc.getThumbBmpPath();
           hasCoverImage = true;
         }
